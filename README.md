@@ -162,3 +162,10 @@ We want to know how feature value "Cat OK" = Yes contribute to prediction. Becau
 
 - As in any permutation algorithm, Shapley suffers same problem described in *Permutation Feature Importance - Cons 1.* 
 - Slow to calculate. Especially when data is large. In this case, just use a subset of data to estimate Shapley value.
+
+# Demo
+
+- Permutation Feature Importance notebook with `scikit-learn`: `./demo/Permutation Feature Importance.ipynb`.
+- Partial Dependence Plot notebook with `scikit-learn`: `./demo/PDP1.ipynb`.
+- Partial Dependence Plot notebook with `pdpbox`: `./demo/PDP2.ipynb`.
+- Shapley notebook with `shap`: `./demo/SHAP.ipynb`.
