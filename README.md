@@ -1,10 +1,10 @@
-This repo summarizes what I learned from 
+# Summarize book: Interpretable machine learning
 
-> Molnar, Christoph. "Interpretable machine learning. A Guide for Making Black Box Models Explainable", 2019. https://christophm.github.io/interpretable-ml-book/.
+Book link: Molnar, Christoph. "Interpretable machine learning. A Guide for Making Black Box Models Explainable", 2019. https://christophm.github.io/interpretable-ml-book/.
 
-It includes: 
+It includes:
 
-- Parts from the book that I found useful in realworld.
+- Parts from the book that I found useful.
 - Refer techiniques that is Model Agnostic (do not depend on specific model). In modeling practice, we can compare several models together easily.
 - Include Notebook demo.
 - No math, just layman explanation.
@@ -12,18 +12,18 @@ It includes:
 
 To better understand the topic, I suggest you should give the book a try.
 
-# What is Interpretability of a Machine Learning
+## What is Interpretability of a Machine Learning
 
-Interpretability measures *how easy* for human to understand why model makes a certain prediction. *How easy* is not a quantity. That why it is hard to make a metric to measure the Intepretablity of a model. In practice, we seperate model into 2 types: Glassbox and Blackbox. Glassbox is easier to understand than Blackbox. Take a look at some Glassbox and Blackbox model below:
+Interpretability measures *how easy* for human to understand why model makes a certain prediction. *How easy* is not a quantity. That why it is hard to make a metric to measure the Intepretablity of a model. In practice, we seperate model into 2 types: Glassbox and Blackbox. Glassbox is easier to understand than Blackbox. Hence, it tends to easier to explain. Take a look at some Glassbox and Blackbox model below:
 
 - Glassbox model: Linear Regression, Logistic Regression, Decision Tree, etc.
 - Blackbox model: Random Forest, Gradient Boosting, Neural Network, Stacking model, etc.
 
 We can see that it is so easy to understand the prediction of Linear Regression, for example: $$ prediction = bias + weight_1 * feature_1 + weight_2 * feature_2 + ... $$. Value of weights or values of features can give us a lot of hints to understand final prediction. In contrast, to understand prediction of a Random Forest model, we need to track all predictions of all Tree models in Random Forest then combine all predictions into finally single prediction. If a specific feature is used in 2 different trees of a Random Forest model, understand how that feature affect final prediction is really hard.
 
-In general, Predictive power and Intepretability are Negatively correlated.
+In general, Predictive power and Intepretability are kind of trade off.
 
-# Why Interpretability
+## Why Interpretability
 
 - In general, human being is curious and needs to learn about the world. When a model made a wrong prediction, we want to know: Why did it make this decision? Or when a model makes a correct prediction, we then keep asking: Why did it make this prediction? In both case, we all want to know which factors model used to calculate prediction. Hopefully, we can find out some unexpected behavior of model. If the person who are asking these question is our customers, they have the right to ask, we better to prepare some answers.
 
@@ -33,29 +33,43 @@ In general, Predictive power and Intepretability are Negatively correlated.
 
 Not every model needs intepretability. In some low impact environment (recommend a song to listener), why do I get this recommendation is not important. As long as it is a good song. In this case, we should looking for a strong predictive model instead.
 
-# What makes a good Intepretability
+## What makes a good Intepretability
 
 - Picking 2 samples with different prediction (one with probability 0.95 and one with probability 0.15), we should be able to show different explanations for this: Compare to high score, what makes low score prediction? Explanation should show the contrast between 2 predictions.
 - Explanation must be short, 1 to 3 reason. Audience just needs several features that mostly affect predictions. Even if the world is complext, picking top important factors can help us simplify the explnation and make audience understand it seasier.
 - If feature is abnormal and it affects predictions, then explanation must show that feature.
 - Consistent with our prior belief. If we believe larger house and higher price are correlated, then explanation should reveal that.
 
-# (Partial) Global Intepretability
+## Level of explanation
+
+### 1. (Partial) Global Intepretability
 
 In this category of interpretability, we are interested in how part of model affect prediction. For example: In linear regression model, how does each weight contributes to final output?. In Random Forest model, how does feature $ X1 $ affect final probability?
 
 Techniques used in this category mainly explore the relationship between feature and prediction. Some popular techiniques:
 
-- Permutation Feature Importance: Measure the changes in error if we permuted feature's value.
-- Partial Dependence Plot: Show marginal effect of feature on prediction.
+- Permutation Feature Importance: Measure the changes in scoring if we mess up feature's value.
+- Partial Dependence Plot: Show average prediction per each feature value.
 
-# Local Intepretability
+These techniques show what is important to model and how.
 
-In this category, we try to explain why model makes prediction on a single example. For example: RandomForest gives sample X1 a probability of 73%. How did model come up with this number.
+### 2. Local Intepretability
+
+In this category, we try to explain: "why model predicts 0.7 on this sample?". For example: RandomForest gives sample X1 a probability of 73%. How did model come up with this number.
 
 Common techniques focus on explain single feature and quantify its affect to prediction. For example: Feature F1 add 0.15 to average prediction.
 
-# Permutation Feature Importance
+### General flow in explain a model
+
+If nothing is required, we should explain model model from Global to local.
+
+1. First, among many features, showing what is important to model (Feature Importance).
+2. Next, pick some importance feature, showing how importance is to prediction.
+3. Finally, showing local explanation.
+
+## Technique deep dive
+
+### Permutation Feature Importance
 
 There are several way to measure how importance a feature is to a model (called Feature Importance).
 
@@ -77,7 +91,7 @@ Permutation Feature Importance tries to solve above problem. It measures how muc
 
 ![](./imgs/pfimp.png)
 
-If change in eror is possitive, then model relies on that feature. Because remove it (by permuted it) will make error larger. In contrast, if change in error is negative, remove feature result lower error. This suggests we should remove this feature.
+If change in eror is possitive, then model relies on that feature. Because remove it (by permuted it, mess it up) will make error larger. In contrast, if change in error is negative, remove feature result lower error. This suggests we should remove this feature.
 
 **Pros**:
 
@@ -93,14 +107,14 @@ If change in eror is possitive, then model relies on that feature. Because remov
 
 3. Measure on train data or Test data is still a personal decision. It is unclear which one to use. Personally, I always apply it on test data. Because I want to measure feature importance on un-seen data.
 
-**Tips to use**
+**Tips to use**:
 
 - If model is bad, very important feature still gets low important score. Be sure to check model predictive power first.
-- If 2 features A and B are stronglly correlated, even we permute feature A, model still makes a good predictions based on feature B. This results low important score for feature A. Though both of them are actually important. Be sure to handle Multi-Collinear first.
+- If 2 features A and B are stronglly correlated, even we permute feature A, model still makes a good predictions based on feature B. This results low important score for feature A. Though both of them are actually important. This also lead us to a weird scenario like: remove feature B from data, model still works great thanks to feature A. Be sure to handle Multi-Collinear first.
 
 Despite of cons, Permutation Feature Importance is a great choice to measure Feature Importance. Because implementation is easy and it is easy to understand. Combine with a careful feature selection, we can make it more reliable in practice.
 
-# Partial Dependence Plot (PDP)
+### Partial Dependence Plot (PDP)
 
 Feature Importance can show which feature has strongest effect on prediction. But we are interested more details like: how is the relationship between feature and prediction? Is it linear, or non-linear? Does lower value of feature and higher value of feature affect prediction in similar way? etc. And Partial Dependence Plot can help us about this.
 
@@ -131,7 +145,7 @@ To calculate average prediction for a value, we just set feature F1 of all sampl
 - Plot Feature distribution along with PDP. By looking at feature distribution, we know where all samples fall and where there is not enough data to trust PDP.
 - Plot all samples instead of average prediction, such as: [ICE curves](https://christophm.github.io/interpretable-ml-book/ice.html#ice).
 
-# Shapley
+### Shapley
 
 Before going into details, let me explain why I refer Shapley as main explanation tools:
 
@@ -141,7 +155,7 @@ Before going into details, let me explain why I refer Shapley as main explanatio
 
 The main idea of SHAP is:
 
-> For a value of a feature, Shap value is the contribution of this feature value to average prediction.
+> For a value of a feature, its Shap value is the contribution (add or subtract) to average prediction.
 
 - What is average prediction? It is the naive prediction: the average of target.
 - For example: Target is house price. Average house price in dataset is $300K. Pick a sample with feature "Number of room"=3 rooms. Its Shapley value is 10,000. This means: "Number of room"=3 adds 10,000 to average house price. Is is **not** the change in prediction when we remove number of room = 3 from features. Intuitively, "Number of room"=3 raises prediction from $300K to $310K.
@@ -158,14 +172,21 @@ We want to know how feature value "Cat OK" = Yes contribute to prediction. Becau
 
 ![](./imgs/shapley.png)
 
-**Cons**
+**Cons**:
 
 - As in any permutation algorithm, Shapley suffers same problem described in *Permutation Feature Importance - Cons 1.* 
 - Slow to calculate. Especially when data is large. In this case, just use a subset of data to estimate Shapley value.
 
-# Demo
+## Demo
 
 - Permutation Feature Importance notebook with `scikit-learn`: `./demo/Permutation Feature Importance.ipynb`.
 - Partial Dependence Plot notebook with `scikit-learn`: `./demo/PDP1.ipynb`.
 - Partial Dependence Plot notebook with `pdpbox`: `./demo/PDP2.ipynb`.
 - Shapley notebook with `shap`: `./demo/SHAP.ipynb`.
+
+## More tips with explanation
+
+- Make sure model performance is acceptable before running explanation. Because in above technique, we use model to make predict.
+- Explain is not consistent in 2 runs. First, check if model prediction is high variance? Overfitting makes model sensitive to a small change in data. Second, try to increase dataset in explain. Small dataset may gives high variance in estimation explanation.
+- How do I handle Multi-Collinear? Check this sklearn guide on [Permutation Importance with Multicollinear or Correlated Features](https://scikit-learn.org/stable/auto_examples/inspection/plot_permutation_importance_multicollinear.html#handling-multicollinear-features).
+- Check error bar on explanation.
